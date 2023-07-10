@@ -1,16 +1,18 @@
-import _ from 'lodash.throttle';
+import throttle from 'lodash.throttle';
 const form = document.querySelector('.feedback-form');
 const emailInput = form.querySelector('input[name="email"]');
 const messageInput = form.querySelector('textarea[name="message"]');
 const feedbackStateKey = 'feedback-form-state';
-form.addEventListener('input', _.throttle(function () {
+
+const saveFeedbackState = throttle(function () {
   const feedbackState = {
     email: emailInput.value,
     message: messageInput.value,
   };
   localStorage.setItem(feedbackStateKey, JSON.stringify(feedbackState));
-}, 500));
+}, 500);
 
+form.addEventListener('input', saveFeedbackState);
 document.addEventListener('DOMContentLoaded', function () {
   const savedState = localStorage.getItem(feedbackStateKey);
   if (savedState) {
@@ -19,8 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
     messageInput.value = feedbackState.message;
   }
 });
+
 form.addEventListener('submit', function (event) {
   event.preventDefault();
+
   const feedbackState = {
     email: emailInput.value,
     message: messageInput.value,
@@ -30,4 +34,3 @@ form.addEventListener('submit', function (event) {
   emailInput.value = '';
   messageInput.value = '';
 });
-
